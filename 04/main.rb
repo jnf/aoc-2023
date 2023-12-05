@@ -7,26 +7,19 @@ def p1 (grid)
   end
 end
 
-
-Card = Struct.new(:wcnt, :cp)
 def p2 (grid)
   list = grid.reduce([]) do |list, line|
     ws, ns = line.split("|").map { |m| m.scan(/\d+/) }
     ws.shift # first number is the card id
     wcnt = ns.count - (ns-ws).count
-    list <<  Card.new(wcnt, 1) # start w/ 1 copy of each card
+    list <<  [wcnt, 1] # start w/ 1 copy of each card
   end
 
-  list.each_with_index do |card, i1|
-    card.cp.times do
-      card.wcnt.times do |i2|
-        nxt = i1 + i2 + 1
-        list[nxt].cp += 1 if list[nxt] # won a copy yay
-      end
-    end
+  list.each_with_index do |(wcnt, cp), i1|
+    list[i1+1, wcnt].each { |imp| imp[1] += cp }
   end
 
-  list.sum(&:cp)
+  list.sum(&:last)
 end
 
 #external API goes down here
